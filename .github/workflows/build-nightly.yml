@@ -115,7 +115,7 @@ jobs:
             git clone 'https://github.com/pflyly/eden-mirror.git' ./eden
           fi
           cd ./eden
-          git apply ../patches/*.patch --verbose
+          git apply ../patches/*.patch --verbose || true
           git submodule update --init --recursive
           echo "VERSION=$(git rev-list --count HEAD)" >> "${GITHUB_ENV}"
 
