@@ -23,7 +23,7 @@ jobs:
   info:
     if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'info'
     runs-on: ubuntu-latest
-    name: "Get info"
+    name: 'Get info'
     strategy:
       matrix:
         target: [Info]
@@ -34,7 +34,7 @@ jobs:
 
       - name: Get the latest release count
         env:
-          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         run: |
           api_url="https://api.github.com/repos/${{ github.repository }}"
           latest_release_info=$(curl -H "Authorization: token $GH_TOKEN" "$api_url/releases/latest")
@@ -100,7 +100,7 @@ jobs:
             runs-on: ubuntu-24.04-arm
     continue-on-error: true
     container: ghcr.io/pkgforge-dev/archlinux:latest
-    name: "Appimage (${{ matrix.target }})"
+    name: 'Appimage (${{ matrix.target }})'
     steps:
       - uses: actions/checkout@v5.0.0
         with:
@@ -157,7 +157,7 @@ jobs:
       matrix:
         target: [Replace, Coexist, Optimised]
     continue-on-error: true
-    name: "Android (${{ matrix.target }})"
+    name: 'Android (${{ matrix.target }})'
     env:
       TARGET: ${{ matrix.target }}
     steps:
@@ -220,35 +220,35 @@ jobs:
   windows:
     if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'windows'
     runs-on: ${{ matrix.runs-on }}
-    name: "Windows ${{ matrix.target }} ${{ matrix.toolchain }} (${{ matrix.arch }})"
+    name: 'Windows ${{ matrix.target }} ${{ matrix.toolchain }} (${{ matrix.arch }})'
     continue-on-error: true
     strategy:
       matrix:
         include:
-           - toolchain: msvc
-             target: normal
-             arch: x86_64
-             runs-on: windows-2022
-           - toolchain: msvc
-             target: normal
-             arch: arm64
-             runs-on: windows-11-arm
-           - toolchain: clang
-             target: normal
-             arch: x86_64
-             runs-on: windows-2022
-           - toolchain: clang
-             target: normal
-             arch: arm64
-             runs-on: windows-11-arm
-           - toolchain: clang
-             target: PGO
-             arch: x86_64
-             runs-on: windows-2022
-           - toolchain: clang
-             target: PGO
-             arch: arm64
-             runs-on: windows-11-arm
+          - toolchain: msvc
+            target: normal
+            arch: x86_64
+            runs-on: windows-2022
+          - toolchain: msvc
+            target: normal
+            arch: arm64
+            runs-on: windows-11-arm
+          - toolchain: clang
+            target: normal
+            arch: x86_64
+            runs-on: windows-2022
+          - toolchain: clang
+            target: normal
+            arch: arm64
+            runs-on: windows-11-arm
+          - toolchain: clang
+            target: PGO
+            arch: x86_64
+            runs-on: windows-2022
+          - toolchain: clang
+            target: PGO
+            arch: arm64
+            runs-on: windows-11-arm
     env:
       TOOLCHAIN: ${{ matrix.toolchain }}
       ARCH: ${{ matrix.arch }}
@@ -276,13 +276,16 @@ jobs:
         shell: bash
         run: |
           echo "C:/Program Files/LLVM/bin" >> $GITHUB_PATH
-          
+
       - name: Clone Eden
         shell: bash
         run: |
+          git config --global user.name "Auto Bot"
+          git config --global user.email "bot@example.com"
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
           cd ./eden
-          echo "VERSION=$(git rev-list --count HEAD)" >> "${GITHUB_ENV}"
+          git apply ../patches-eden/*.patch --verbose || true
+          git rev-list --count HEAD)" >> "${GITHUB_ENV}"
 
       - name: Restore cpm cache
         uses: actions/cache/restore@v4
@@ -333,7 +336,7 @@ jobs:
   macos:
     if: github.event.inputs.job_to_run == 'all' || github.event.inputs.job_to_run == 'macos'
     runs-on: ${{ matrix.runs-on }}
-    name: "MacOS (${{ matrix.target }})"
+    name: 'MacOS (${{ matrix.target }})'
     strategy:
       matrix:
         include:
@@ -423,7 +426,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
-        
+
       - name: Clone Eden
         run: |
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
@@ -463,7 +466,7 @@ jobs:
 
   release:
     if: github.ref_name == 'main' && github.event.inputs.job_to_run == 'all'
-    name: "release"
+    name: 'release'
     needs: [info, appimage, windows, macos, android, freebsd]
     permissions:
       actions: read
@@ -473,7 +476,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5.0.0
         with:
-          pattern: "*"
+          pattern: '*'
           merge-multiple: true
 
       - name: Generate changelog
@@ -487,9 +490,9 @@ jobs:
       - name: Release Eden
         uses: softprops/action-gh-release@v2.3.3
         with:
-          name: "Eden Unofficial Nightly Release: ${{ env.COUNT }}"
-          tag_name: "${{ env.TAG }}"
-          body: "${{ env.BODY }}"
+          name: 'Eden Unofficial Nightly Release: ${{ env.COUNT }}'
+          tag_name: '${{ env.TAG }}'
+          body: '${{ env.BODY }}'
           prerelease: false
           draft: false
           generate_release_notes: false
