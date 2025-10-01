@@ -284,7 +284,6 @@ jobs:
           git config --global user.email "bot@example.com"
           git clone 'https://git.eden-emu.dev/eden-emu/eden.git' ./eden
           cd ./eden
-          git apply ../patches-eden/*.patch --verbose || true
           git rev-list --count HEAD)" >> "${GITHUB_ENV}"
 
       - name: Restore cpm cache
